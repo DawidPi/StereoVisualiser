@@ -1,4 +1,4 @@
-#version 450
+#version 440
 
 layout (triangles, equal_spacing, cw) in;
 
