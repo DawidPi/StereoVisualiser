@@ -20,7 +20,7 @@ public:
         const cv::Mat image = mat.t();
         GLfloat ratioYX = static_cast<GLfloat>(image.rows) / image.cols;
         const GLfloat glMaxLength = 2.0f;
-        const GLfloat maxLength = 1.5f;
+        const GLfloat maxLength = 1.0f;
         GLfloat lengthX = maxLength;
         GLfloat lengthY = maxLength;
         GLfloat startingY=1 - (glMaxLength - maxLength)/2;
