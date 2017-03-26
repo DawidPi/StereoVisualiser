@@ -30,9 +30,10 @@ void OpenGLWindow::startWindow(unsigned int width, unsigned int height, const ch
         throw std::runtime_error("could not load openGL functions");
     }
 
+    glfwWindowHint(GLFW_REFRESH_RATE, 50);
     init();
     while (!glfwWindowShouldClose(window)) {
-        render();
+        render(window);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
