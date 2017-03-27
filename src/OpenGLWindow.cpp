@@ -6,8 +6,11 @@
 #include <iostream>
 #include "OpenGLWindow.hpp"
 
-OpenGLWindow::OpenGLWindow() {
+OpenGLWindow* OpenGLWindow::mInstance= nullptr;
 
+OpenGLWindow::OpenGLWindow()
+{
+    mInstance=this;
 }
 
 void OpenGLWindow::startWindow(unsigned int width, unsigned int height, const char *windowName) {
@@ -16,6 +19,8 @@ void OpenGLWindow::startWindow(unsigned int width, unsigned int height, const ch
         throw std::runtime_error("glfw could not be initialized");
 
     /* Create a windowed mode window and its OpenGL context */
+    mWindowWidth = width;
+    mWindowHeight = height;
     window = glfwCreateWindow(width, height, windowName, NULL, NULL);
     if (!window) {
         glfwTerminate();
@@ -30,7 +35,8 @@ void OpenGLWindow::startWindow(unsigned int width, unsigned int height, const ch
         throw std::runtime_error("could not load openGL functions");
     }
 
-    glfwWindowHint(GLFW_REFRESH_RATE, 50);
+    glfwSetKeyCallback(window, onKeyPressed);
+    glfwWindowHint(GLFW_REFRESH_RATE, 120);
     init();
     while (!glfwWindowShouldClose(window)) {
         render(window);
@@ -43,4 +49,8 @@ void OpenGLWindow::startWindow(unsigned int width, unsigned int height, const ch
     }
 
     glfwTerminate();
+}
+
+void OpenGLWindow::onKeyPressed(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    mInstance->onKey(key, scancode, action, mods);
 }

@@ -17,9 +17,18 @@ public:
     virtual void render(GLFWwindow *window)=0;
     virtual void startWindow(unsigned int width, unsigned int length, const char *windowName = "");
     virtual void onGlfwClose()=0;
+    virtual void onKey(int key, int scancode, int action, int mods)=0;
     virtual ~OpenGLWindow(){};
+    unsigned int getWidth() const {return mWindowWidth;}
+    unsigned int getHeight() const {return mWindowHeight;}
 private:
     GLFWwindow* window;
+
+    static OpenGLWindow* mInstance;
+    static void onKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+    unsigned int mWindowWidth;
+    unsigned int mWindowHeight;
 };
 
 
