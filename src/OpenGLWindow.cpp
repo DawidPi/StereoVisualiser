@@ -36,7 +36,6 @@ void OpenGLWindow::startWindow(unsigned int width, unsigned int height, const ch
     }
 
     glfwSetKeyCallback(window, onKeyPressed);
-    glfwWindowHint(GLFW_REFRESH_RATE, 120);
     init();
     while (!glfwWindowShouldClose(window)) {
         render(window);

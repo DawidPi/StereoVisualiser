@@ -30,21 +30,15 @@ private:
     GLuint tessShader;
     GLuint fragmentShader;
     GLuint buffer;
-    GLuint elementArrayBuffer;
     GLfloat mZoom;
     GLfloat mRotationY;
     GLfloat mRotationX;
     GLboolean mColor;
 
+    void rotationToRange(GLfloat &rotationAngle);
     GLuint spawnShader(GLuint shader, const char *shaderPath);
     void calculateVertices(std::vector<GLfloat> &vector, const cv::Mat &mat);
     glm::mat4 calculateTrasformationMatrix();
-
-    void rotationToRange(GLfloat &rotationAngle);
-
-    void calculateIndices(std::vector<GLuint> &vector, cv::Mat mat);
-
-    size_t mIndicesSize;
 };
 
 
