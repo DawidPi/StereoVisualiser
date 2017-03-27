@@ -19,7 +19,8 @@ DisparityRenderingEngine::DisparityRenderingEngine(std::string imagePath)
         : mImagePath(imagePath),
           mZoom(0),
           mRotationY(0),
-          mRotationX(0)
+          mRotationX(0),
+          mColor(true)
 {
 }
 
@@ -77,14 +78,24 @@ void DisparityRenderingEngine::init() {
     glGenBuffers(1,&buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glCullFace(GL_FRONT_AND_BACK);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
+    glShadeModel(GL_SMOOTH);
     cv::Mat image = cv::imread(mImagePath, cv::IMREAD_GRAYSCALE);
     image.convertTo(image, CV_32F, 1.0/255.0);
     std::vector<GLfloat> vertices;
     calculateVertices(vertices, image);
     mVertexes=vertices.size();
     glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(GLfloat), vertices.data(), GL_DYNAMIC_DRAW);
+
+    glGenBuffers(1, &elementArrayBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
+    std::vector<GLuint> indices;
+    calculateIndices(indices, image);
+    mIndicesSize = indices.size();
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), vertices.data(), GL_DYNAMIC_DRAW);
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 }
 
@@ -100,6 +111,8 @@ void DisparityRenderingEngine::render(GLFWwindow *window) {
     auto wholeTransformationMatrix = calculateTrasformationMatrix();
     glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(wholeTransformationMatrix));
     glEnableVertexAttribArray(0);
+    glUniform1i(1, mColor);
+    //glDrawElements(GL_TRIANGLES, 2, GL_UNSIGNED_INT, 0);
     glDrawArrays(GL_POINTS, 0, (GLsizei) mVertexes);
 }
 
@@ -144,7 +157,8 @@ glm::mat4 DisparityRenderingEngine::calculateTrasformationMatrix() {
     auto translation = glm::mat4(1.0f);
     auto translationBase = -7.0f;
     translation = glm::translate(translation, glm::vec3(0.0f, 0.0f, translationBase + mZoom));
-    return frustum * translation * rotationXYZ;
+    auto centerTranslation = glm::mat4(1.0f);
+    return  frustum * translation * rotationXYZ;
 }
 
 void DisparityRenderingEngine::onKey(int key, int scancode, int action, int mods) {
@@ -173,6 +187,17 @@ void DisparityRenderingEngine::onKey(int key, int scancode, int action, int mods
         mRotationY -= rotationDiff;
         rotationToRange(mRotationY);
     }
+    if(key == 'Z'){
+        mColor = true;
+    }
+    if(key == 'X'){
+        mColor = false;
+    }
+    if(key == 'C'){
+        mRotationX=0;
+        mRotationY=0;
+        mZoom=0;
+    }
     std::cout << "Zoom:" << mZoom << std::endl;
 }
 
@@ -182,4 +207,35 @@ void DisparityRenderingEngine::rotationToRange(GLfloat &rotationAngle) {
     } else if(rotationAngle < -glm::pi<GLfloat>()){
         rotationAngle = -glm::pi<GLfloat>();
     }
+}
+
+void DisparityRenderingEngine::calculateIndices(std::vector<GLuint> &vector, cv::Mat mat) {
+    vector.push_back(0);
+    vector.push_back(1);
+    vector.push_back(640);
+    vector.push_back(1);
+    vector.push_back(2);
+    vector.push_back(641);
+    vector.push_back(2);
+    vector.push_back(3);
+    vector.push_back(642);
+
+
+
+//    for(size_t row=0; row < mat.rows-1; ++row){
+//        for(size_t col=0; col < mat.cols-1; ++col){
+//            GLuint currentElementIdx =row*mat.cols+col;
+//            GLuint nextElementIdx =row*mat.cols+col+1;
+//            GLuint belowElementIdx =(row+1)*mat.cols+col;
+//            GLuint nextBelowElementIdx =(row+1)*mat.cols+col+1;
+//
+//            vector.push_back(currentElementIdx);
+//            vector.push_back(nextElementIdx);
+//            vector.push_back(belowElementIdx);
+//
+//            vector.push_back(belowElementIdx);
+//            vector.push_back(nextElementIdx);
+//            vector.push_back(nextBelowElementIdx);
+//        }
+//    }
 }
