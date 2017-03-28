@@ -13,16 +13,16 @@ OpenGLWindow::OpenGLWindow() : mShutDown(false)
     mInstance=this;
 }
 
-void OpenGLWindow::startWindow(unsigned int width, unsigned int height, const char *windowName) {
+void OpenGLWindow::startWindow(const char *windowName) {
     /* Initialize the library */
     if (!glfwInit())
         throw std::runtime_error("glfw could not be initialized");
 
     /* Create a windowed mode window and its OpenGL context */
-    mWindowWidth = width;
-    mWindowHeight = height;
     auto primaryMonitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+    mWindowWidth = (unsigned int) mode->width;
+    mWindowHeight = (unsigned int) mode->height;
     window = glfwCreateWindow(mode->width, mode->height, windowName, primaryMonitor, NULL);
     if (!window) {
         glfwTerminate();

@@ -34,7 +34,6 @@ private:
     GLboolean mColor;
     GLdouble mMinimum;
     GLdouble mMaximum;
-
     bool mMouseButtonPressed;
 
 private:

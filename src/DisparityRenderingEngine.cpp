@@ -160,7 +160,6 @@ glm::mat4 DisparityRenderingEngine::calculateTrasformationMatrix() {
 void DisparityRenderingEngine::onKey(int key, int scancode, int action, int mods) {
     const GLfloat rotationDiff = glm::pi<float>()/500;
     const GLfloat zoomDiff = 0.05;
-    std::cout << "key: " << key << std::endl;
     if(key == ']'){
         mZoom += zoomDiff;
     }

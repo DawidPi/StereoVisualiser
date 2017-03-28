@@ -15,7 +15,7 @@ public:
 
     virtual void init()=0;
     virtual void render(GLFWwindow *window)=0;
-    virtual void startWindow(unsigned int width, unsigned int length, const char *windowName = "");
+    virtual void startWindow(const char *windowName);
     virtual void onGlfwClose()=0;
     virtual void onKey(int key, int scancode, int action, int mods)=0;
     virtual void onScroll(double xOffset, double yOffset)=0;
