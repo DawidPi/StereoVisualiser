@@ -24,6 +24,7 @@ public:
     virtual ~OpenGLWindow(){};
     unsigned int getWidth() const {return mWindowWidth;}
     unsigned int getHeight() const {return mWindowHeight;}
+    virtual void shutDown();
 private:
     GLFWwindow* window;
 
@@ -35,6 +36,7 @@ private:
 
     unsigned int mWindowWidth;
     unsigned int mWindowHeight;
+    bool mShutDown;
 };
 
 

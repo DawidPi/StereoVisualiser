@@ -48,12 +48,6 @@ void DisparityRenderingEngine::calculateVertices(std::vector<GLfloat> &vector, c
         startingX += updateLength/2;
     }
 
-    double minValue=0;
-    double maxValue=0;
-    cv::minMaxLoc(image, &minValue, &maxValue);
-    const GLfloat minFragmentValue = (const GLfloat) minValue;
-    const GLfloat maxFragmentValue = (const GLfloat) maxValue;
-
     const GLfloat diffX = lengthX/image.cols;
     const GLfloat diffY = lengthY/image.rows;
     for(int row=0; row < image.rows; ++row){
@@ -166,6 +160,7 @@ glm::mat4 DisparityRenderingEngine::calculateTrasformationMatrix() {
 void DisparityRenderingEngine::onKey(int key, int scancode, int action, int mods) {
     const GLfloat rotationDiff = glm::pi<float>()/500;
     const GLfloat zoomDiff = 0.05;
+    std::cout << "key: " << key << std::endl;
     if(key == ']'){
         mZoom += zoomDiff;
     }
@@ -198,6 +193,9 @@ void DisparityRenderingEngine::onKey(int key, int scancode, int action, int mods
         mRotationX=0;
         mRotationY=0;
         mZoom=0;
+    }
+    if(key == 256){
+        shutDown();
     }
 }
 

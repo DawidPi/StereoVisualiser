@@ -26,6 +26,6 @@ void main() {
     if(colorful)
         fs_color.xyzw = vec4(redColor, greenColor, blueColor, 1.0);
     else
-        fs_color.xyzw = vec4(flatColor, flatColor, flatColor, 1.0);
+        fs_color.xyzw = vec4(position.z, position.z, position.z, 1.0);
     gl_Position = transformation*position;
 }

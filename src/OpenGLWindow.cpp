@@ -8,7 +8,7 @@
 
 OpenGLWindow* OpenGLWindow::mInstance= nullptr;
 
-OpenGLWindow::OpenGLWindow()
+OpenGLWindow::OpenGLWindow() : mShutDown(false)
 {
     mInstance=this;
 }
@@ -21,7 +21,9 @@ void OpenGLWindow::startWindow(unsigned int width, unsigned int height, const ch
     /* Create a windowed mode window and its OpenGL context */
     mWindowWidth = width;
     mWindowHeight = height;
-    window = glfwCreateWindow(width, height, windowName, NULL, NULL);
+    auto primaryMonitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+    window = glfwCreateWindow(mode->width, mode->height, windowName, primaryMonitor, NULL);
     if (!window) {
         glfwTerminate();
         throw std::runtime_error("could not create opengl context");
@@ -41,6 +43,12 @@ void OpenGLWindow::startWindow(unsigned int width, unsigned int height, const ch
     glfwSetCursorPosCallback(window, onMouseCursorChanged);
     init();
     while (!glfwWindowShouldClose(window)) {
+        if(mShutDown){
+            glfwDestroyWindow(window);
+            glfwTerminate();
+            return;
+        }
+
         render(window);
 
         /* Swap front and back buffers */
@@ -67,5 +75,9 @@ void OpenGLWindow::onScrollDone(GLFWwindow *window, double xoffset, double yoffs
 
 void OpenGLWindow::onMouseCursorChanged(GLFWwindow *window, double xpos, double ypos) {
     mInstance->onCursorPositionChanged(xpos, ypos);
+}
+
+void OpenGLWindow::shutDown(){
+    mShutDown = true;
 }
 
