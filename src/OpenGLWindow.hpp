@@ -18,6 +18,9 @@ public:
     virtual void startWindow(unsigned int width, unsigned int length, const char *windowName = "");
     virtual void onGlfwClose()=0;
     virtual void onKey(int key, int scancode, int action, int mods)=0;
+    virtual void onScroll(double xOffset, double yOffset)=0;
+    virtual void onMouseButton(int button, int action, int mods)=0;
+    virtual void onCursorPositionChanged(double xPosition, double yPosition)=0;
     virtual ~OpenGLWindow(){};
     unsigned int getWidth() const {return mWindowWidth;}
     unsigned int getHeight() const {return mWindowHeight;}
@@ -26,7 +29,9 @@ private:
 
     static OpenGLWindow* mInstance;
     static void onKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void onScrollDone(GLFWwindow *window, double xoffset, double yoffset);
     static void onMouseButtonPressed(GLFWwindow* window, int button, int action, int mods);
+    static void onMouseCursorChanged(GLFWwindow* window, double xpos, double ypos);
 
     unsigned int mWindowWidth;
     unsigned int mWindowHeight;

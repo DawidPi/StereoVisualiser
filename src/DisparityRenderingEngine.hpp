@@ -18,8 +18,6 @@ public:
     void render(GLFWwindow *window) override;
     void onGlfwClose() override;
 
-    void onKey(int key, int scancode, int action, int mods) override;
-
 private:
     std::string mImagePath;
     size_t mVertexes;
@@ -34,11 +32,28 @@ private:
     GLfloat mRotationY;
     GLfloat mRotationX;
     GLboolean mColor;
+    GLdouble mMinimum;
+    GLdouble mMaximum;
 
+    bool mMouseButtonPressed;
+
+private:
     void rotationToRange(GLfloat &rotationAngle);
     GLuint spawnShader(GLuint shader, const char *shaderPath);
     void calculateVertices(std::vector<GLfloat> &vector, const cv::Mat &mat);
     glm::mat4 calculateTrasformationMatrix();
+
+private:
+    struct MousePosition{
+        MousePosition(double xPos, double yPos) : xPosition(xPos), yPosition(yPos){}
+        double xPosition;
+        double yPosition;
+    } mMouseCursorPosition;
+
+    void onCursorPositionChanged(double xPosition, double yPosition) override;
+    void onKey(int key, int scancode, int action, int mods) override;
+    void onScroll(double xOffset, double yOffset) override;
+    void onMouseButton(int button, int action, int mods) override;
 };
 
 

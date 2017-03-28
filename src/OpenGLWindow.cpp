@@ -36,6 +36,9 @@ void OpenGLWindow::startWindow(unsigned int width, unsigned int height, const ch
     }
 
     glfwSetKeyCallback(window, onKeyPressed);
+    glfwSetScrollCallback(window, onScrollDone);
+    glfwSetMouseButtonCallback(window, onMouseButtonPressed);
+    glfwSetCursorPosCallback(window, onMouseCursorChanged);
     init();
     while (!glfwWindowShouldClose(window)) {
         render(window);
@@ -53,3 +56,16 @@ void OpenGLWindow::startWindow(unsigned int width, unsigned int height, const ch
 void OpenGLWindow::onKeyPressed(GLFWwindow *window, int key, int scancode, int action, int mods) {
     mInstance->onKey(key, scancode, action, mods);
 }
+
+void OpenGLWindow::onMouseButtonPressed(GLFWwindow *window, int button, int action, int mods) {
+    mInstance->onMouseButton(button, action, mods);
+}
+
+void OpenGLWindow::onScrollDone(GLFWwindow *window, double xoffset, double yoffset) {
+    mInstance->onScroll(xoffset, yoffset);
+}
+
+void OpenGLWindow::onMouseCursorChanged(GLFWwindow *window, double xpos, double ypos) {
+    mInstance->onCursorPositionChanged(xpos, ypos);
+}
+

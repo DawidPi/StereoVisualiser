@@ -20,7 +20,9 @@ DisparityRenderingEngine::DisparityRenderingEngine(std::string imagePath)
           mZoom(0),
           mRotationY(0),
           mRotationX(0),
-          mColor(true)
+          mColor(GL_TRUE),
+          mMouseButtonPressed(false),
+          mMouseCursorPosition(0, 0)
 {
 }
 
@@ -45,6 +47,12 @@ void DisparityRenderingEngine::calculateVertices(std::vector<GLfloat> &vector, c
         GLfloat updateLength =  maxLength - lengthY;
         startingX += updateLength/2;
     }
+
+    double minValue=0;
+    double maxValue=0;
+    cv::minMaxLoc(image, &minValue, &maxValue);
+    const GLfloat minFragmentValue = (const GLfloat) minValue;
+    const GLfloat maxFragmentValue = (const GLfloat) maxValue;
 
     const GLfloat diffX = lengthX/image.cols;
     const GLfloat diffY = lengthY/image.rows;
@@ -87,6 +95,7 @@ void DisparityRenderingEngine::init() {
     std::vector<GLfloat> vertices;
     calculateVertices(vertices, image);
     mVertexes=vertices.size();
+    cv::minMaxLoc(image, &mMinimum, &mMaximum);
     glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(GLfloat), vertices.data(), GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 }
@@ -102,6 +111,8 @@ void DisparityRenderingEngine::render(GLFWwindow *window) {
     glUseProgram(program);
     auto wholeTransformationMatrix = calculateTrasformationMatrix();
     glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(wholeTransformationMatrix));
+    glUniform1f(2, static_cast<GLfloat>(mMinimum));
+    glUniform1f(3, static_cast<GLfloat>(mMaximum));
     glEnableVertexAttribArray(0);
     glUniform1i(1, mColor);
     glDrawArrays(GL_POINTS, 0, (GLsizei) mVertexes);
@@ -153,7 +164,6 @@ glm::mat4 DisparityRenderingEngine::calculateTrasformationMatrix() {
 }
 
 void DisparityRenderingEngine::onKey(int key, int scancode, int action, int mods) {
-    std::cout << "key: " << (char) key << std::endl;
     const GLfloat rotationDiff = glm::pi<float>()/500;
     const GLfloat zoomDiff = 0.05;
     if(key == ']'){
@@ -179,17 +189,16 @@ void DisparityRenderingEngine::onKey(int key, int scancode, int action, int mods
         rotationToRange(mRotationY);
     }
     if(key == 'Z'){
-        mColor = true;
+        mColor = GL_TRUE;
     }
     if(key == 'X'){
-        mColor = false;
+        mColor = GL_FALSE;
     }
     if(key == 'C'){
         mRotationX=0;
         mRotationY=0;
         mZoom=0;
     }
-    std::cout << "Zoom:" << mZoom << std::endl;
 }
 
 void DisparityRenderingEngine::rotationToRange(GLfloat &rotationAngle) {
@@ -198,4 +207,35 @@ void DisparityRenderingEngine::rotationToRange(GLfloat &rotationAngle) {
     } else if(rotationAngle < -glm::pi<GLfloat>()){
         rotationAngle = -glm::pi<GLfloat>();
     }
+}
+
+void DisparityRenderingEngine::onScroll(double xOffset, double yOffset) {
+    mZoom+=0.5f*yOffset;
+}
+
+void DisparityRenderingEngine::onMouseButton(int button, int action, int mods) {
+    if(button == GLFW_MOUSE_BUTTON_LEFT){
+        if(action == GLFW_PRESS)
+            mMouseButtonPressed=true;
+        else if(action == GLFW_RELEASE)
+            mMouseButtonPressed=false;
+    }
+    if(button == GLFW_MOUSE_BUTTON_RIGHT){
+        if(action == GLFW_PRESS)
+            mColor = (GLboolean) !mColor;
+    }
+}
+
+void DisparityRenderingEngine::onCursorPositionChanged(double xPosition, double yPosition) {
+    MousePosition currentMousePosition(xPosition, yPosition);
+
+    if(mMouseButtonPressed){
+        const double scale=0.005;
+        mRotationY -= scale*(mMouseCursorPosition.xPosition - currentMousePosition.xPosition);
+        rotationToRange(mRotationX);
+        mRotationX -= scale*(mMouseCursorPosition.yPosition - currentMousePosition.yPosition);
+        rotationToRange(mRotationY);
+    }
+
+    mMouseCursorPosition = currentMousePosition;
 }
