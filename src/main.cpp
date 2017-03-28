@@ -56,7 +56,8 @@ int main(int argc, const char* argv[])
         DisparityCalculator calculator(leftImagePath, rightImagePath);
         cv::Mat disparityImage;
         calculator.calculate(disparityImage);
-        cv::imshow("testWindow", disparityImage);
+        DisparityRenderingEngine engine(disparityImage);
+        engine.startWindow("StereoVisualiser");
         return 0;
     }
 

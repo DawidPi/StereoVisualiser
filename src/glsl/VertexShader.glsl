@@ -11,16 +11,26 @@ layout (location=2) uniform float minimumValue;
 layout (location=3) uniform float maximumValue;
 
 void main() {
-    float flatColor = (((position.z - minimumValue)*1)/(maximumValue-minimumValue)) ;
-    float blueColor = sin(2*M_PI*flatColor) * 0.5 + 0.5;
-    float greenColor = sin(2*(M_PI*flatColor - M_PI/4)) * 0.5 + 0.5;
-    float redColor = sin(2*(M_PI*flatColor - M_PI/2)) * 0.5 + 0.5;
+    const float floatEps=0.000001;
 
-    if(blueColor < 0.51)
+    float differenceBetweenMinimum = position.z - minimumValue;
+    if(differenceBetweenMinimum < floatEps) // corner case
+        differenceBetweenMinimum=floatEps;
+
+    float flatColor = (((differenceBetweenMinimum))/(maximumValue-minimumValue)) ;
+
+    if(flatColor > (1.0f - floatEps)) // corner case
+        flatColor=(1.0f - floatEps);
+
+    float blueColor = sin(2*M_PI*flatColor) * 0.5 + 0.50;
+    float greenColor = sin(2*(M_PI*flatColor - M_PI/4)) * 0.5 + 0.50;
+    float redColor = sin(2*(M_PI*flatColor - M_PI/2)) * 0.5 + 0.50;
+
+    if(blueColor < 0.5)
         blueColor=0;
-    if(redColor < 0.51)
+    if(redColor < 0.5)
         redColor=0;
-    if(greenColor < 0.51)
+    if(greenColor < 0.5)
         greenColor=0;
 
     if(colorful)

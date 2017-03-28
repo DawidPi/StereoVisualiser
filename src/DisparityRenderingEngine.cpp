@@ -17,14 +17,15 @@
 
 DisparityRenderingEngine::DisparityRenderingEngine(std::string imagePath)
         : mImagePath(imagePath),
-          mZoom(0),
-          mRotationY(0),
-          mRotationX(0),
-          mColor(GL_TRUE),
-          mMouseButtonPressed(false),
-          mMouseCursorPosition(0, 0)
+          mImage()
 {
 }
+
+DisparityRenderingEngine::DisparityRenderingEngine(cv::Mat &image) :
+        mImagePath(),
+        mImage(image)
+
+{}
 
 void DisparityRenderingEngine::calculateVertices(std::vector<GLfloat> &vector, const cv::Mat &mat) {
     const cv::Mat image = mat.t();
@@ -84,7 +85,15 @@ void DisparityRenderingEngine::init() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glShadeModel(GL_SMOOTH);
-    cv::Mat image = cv::imread(mImagePath, cv::IMREAD_GRAYSCALE);
+    cv::Mat image;
+    if(!mImagePath.empty())
+        image = cv::imread(mImagePath, cv::IMREAD_GRAYSCALE);
+    else if(!mImage.empty()){
+        image = std::move(mImage);
+    } else {
+        throw std::runtime_error("invalid disparityMapPath provided or empty disparity image is given.");
+    }
+
     image.convertTo(image, CV_32F, 1.0/255.0);
     std::vector<GLfloat> vertices;
     calculateVertices(vertices, image);
@@ -193,7 +202,8 @@ void DisparityRenderingEngine::onKey(int key, int scancode, int action, int mods
         mRotationY=0;
         mZoom=0;
     }
-    if(key == 256){
+    const auto escapeButton = 256;
+    if(key == escapeButton){
         shutDown();
     }
 }
@@ -236,3 +246,4 @@ void DisparityRenderingEngine::onCursorPositionChanged(double xPosition, double 
 
     mMouseCursorPosition = currentMousePosition;
 }
+

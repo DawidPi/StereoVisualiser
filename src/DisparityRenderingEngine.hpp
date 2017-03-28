@@ -14,12 +14,15 @@ class DisparityRenderingEngine : public OpenGLWindow{
 public:
 
     DisparityRenderingEngine(std::string imagePath);
+    DisparityRenderingEngine(cv::Mat& image);
     void init() override;
     void render(GLFWwindow *window) override;
     void onGlfwClose() override;
 
 private:
     std::string mImagePath;
+    cv::Mat mImage;
+
     size_t mVertexes;
     GLuint program;
     GLuint vertexShader;
@@ -28,13 +31,13 @@ private:
     GLuint tessShader;
     GLuint fragmentShader;
     GLuint buffer;
-    GLfloat mZoom;
-    GLfloat mRotationY;
-    GLfloat mRotationX;
-    GLboolean mColor;
+    GLfloat mZoom = 0.0f;
+    GLfloat mRotationY = 0.0f;
+    GLfloat mRotationX = 0.0f;
+    GLboolean mColor = GL_TRUE;
     GLdouble mMinimum;
     GLdouble mMaximum;
-    bool mMouseButtonPressed;
+    bool mMouseButtonPressed = false;
 
 private:
     void rotationToRange(GLfloat &rotationAngle);
@@ -47,7 +50,7 @@ private:
         MousePosition(double xPos, double yPos) : xPosition(xPos), yPosition(yPos){}
         double xPosition;
         double yPosition;
-    } mMouseCursorPosition;
+    } mMouseCursorPosition = MousePosition(0,0);
 
     void onCursorPositionChanged(double xPosition, double yPosition) override;
     void onKey(int key, int scancode, int action, int mods) override;
