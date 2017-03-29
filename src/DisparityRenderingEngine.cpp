@@ -72,8 +72,6 @@ void DisparityRenderingEngine::init() {
 
     glAttachShader(program, vertexShader);
     glAttachShader(program, fragmentShader);
-    //glAttachShader(program, tessControlShader);
-    //glAttachShader(program, tessShader);
     glLinkProgram(program);
 
     glGenVertexArrays(1, &vao);

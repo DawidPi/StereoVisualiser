@@ -1,9 +1,9 @@
 #include <vector>
 #include <opencv2/core/mat.hpp>
 #include <iostream>
-#include <string>
 #include "DisparityRenderingEngine.hpp"
-#include "DisparityCalculator.hpp"
+#include "SGBMDisparityCalculator.hpp"
+#include "SADDisparityCalculator.hpp"
 #include <boost/program_options.hpp>
 #include <opencv/cv.hpp>
 
@@ -21,6 +21,8 @@ int main(int argc, const char* argv[])
     const auto disparityMapOption("disparityMapPath");
     const auto leftImage = "leftImage";
     const auto rightImage = "rightImage";
+    const auto disparitySave = "saveDisparity";
+    const auto useSGBM = "useSGBM";
 
     program_options::options_description description("Welcome to Stereo Visualiser v1.0 created by Dawid Pilarski.\n"
     "Please get familiar with available options");
@@ -31,7 +33,10 @@ int main(int argc, const char* argv[])
             (leftImage, program_options::value<std::string>(), "Path to the left image"
                     "of the stereo-image. If this option is passed, the right image should also be passed.")
             (rightImage, program_options::value<std::string>(), "Path to the right image"
-                    "of the stereo-image");
+                    "of the stereo-image")
+            (disparitySave, program_options::value<std::string>(),
+             "Path to the file, where disparity should be saved")
+            (useSGBM, "use OpenCV based Semi Global Matching algorithm");
 
     program_options::variables_map availableOptions;
     program_options::store(program_options::parse_command_line(argc,argv, description), availableOptions);
@@ -53,9 +58,23 @@ int main(int argc, const char* argv[])
         std::string leftImagePath = availableOptions[leftImage].as<std::string>();
         std::string rightImagePath = availableOptions[rightImage].as<std::string>();
 
-        DisparityCalculator calculator(leftImagePath, rightImagePath);
+        DisparityCalculator* calculator = nullptr;
+        if(availableOptions.count(useSGBM)){
+            calculator = new SGBMDisparityCalculator(leftImagePath, rightImagePath);
+        }else{
+            calculator = new SADDisparityCalculator(leftImagePath, rightImagePath);
+        }
         cv::Mat disparityImage;
-        calculator.calculate(disparityImage);
+
+        auto timeStart = cv::getTickCount();
+        calculator->calculate(disparityImage);
+        auto timeStop = cv::getTickCount();
+        std::cout << "execution time: " << (timeStop - timeStart)/cv::getTickFrequency() << std::endl;
+
+        delete calculator;
+        if(availableOptions.count(disparitySave)){
+            cv::imwrite(availableOptions[disparitySave].as<std::string>(), disparityImage);
+        }
         DisparityRenderingEngine engine(disparityImage);
         engine.startWindow("StereoVisualiser");
         return 0;

@@ -8,7 +8,11 @@
 
 OpenGLWindow* OpenGLWindow::mInstance= nullptr;
 
-OpenGLWindow::OpenGLWindow() : mShutDown(false)
+OpenGLWindow::OpenGLWindow() :
+        window(nullptr),
+        mWindowWidth(0),
+        mWindowHeight(0),
+        mShutDown(false)
 {
     mInstance=this;
 }
@@ -61,19 +65,19 @@ void OpenGLWindow::startWindow(const char *windowName) {
     glfwTerminate();
 }
 
-void OpenGLWindow::onKeyPressed(GLFWwindow *window, int key, int scancode, int action, int mods) {
+void OpenGLWindow::onKeyPressed(GLFWwindow *, int key, int scancode, int action, int mods) {
     mInstance->onKey(key, scancode, action, mods);
 }
 
-void OpenGLWindow::onMouseButtonPressed(GLFWwindow *window, int button, int action, int mods) {
+void OpenGLWindow::onMouseButtonPressed(GLFWwindow *, int button, int action, int mods) {
     mInstance->onMouseButton(button, action, mods);
 }
 
-void OpenGLWindow::onScrollDone(GLFWwindow *window, double xoffset, double yoffset) {
+void OpenGLWindow::onScrollDone(GLFWwindow *, double xoffset, double yoffset) {
     mInstance->onScroll(xoffset, yoffset);
 }
 
-void OpenGLWindow::onMouseCursorChanged(GLFWwindow *window, double xpos, double ypos) {
+void OpenGLWindow::onMouseCursorChanged(GLFWwindow *, double xpos, double ypos) {
     mInstance->onCursorPositionChanged(xpos, ypos);
 }
 

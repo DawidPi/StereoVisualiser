@@ -6,14 +6,14 @@
 #include <opencv/cv.hpp>
 #include <opencv2/ximgproc.hpp>
 #include <iostream>
-#include "DisparityCalculator.hpp"
+#include "SGBMDisparityCalculator.hpp"
 
-DisparityCalculator::DisparityCalculator(std::string leftImagePath, std::string rightImagePath) :
+SGBMDisparityCalculator::SGBMDisparityCalculator(std::string leftImagePath, std::string rightImagePath) :
     mLeftImagePath(leftImagePath),
     mRightImagePath(rightImagePath)
 {}
 
-void DisparityCalculator::calculate(cv::Mat &outputImage) {
+void SGBMDisparityCalculator::calculate(cv::Mat &outputImage) {
     auto leftImage = cv::imread(mLeftImagePath, CV_LOAD_IMAGE_GRAYSCALE);
     auto rightImage = cv::imread(mRightImagePath, CV_LOAD_IMAGE_GRAYSCALE);
 
