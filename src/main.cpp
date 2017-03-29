@@ -69,7 +69,7 @@ int main(int argc, const char* argv[])
         auto timeStart = cv::getTickCount();
         calculator->calculate(disparityImage);
         auto timeStop = cv::getTickCount();
-        std::cout << "execution time: " << (timeStop - timeStart)/cv::getTickFrequency() << std::endl;
+        std::cout << "execution time: " << (timeStop - timeStart)/cv::getTickFrequency() << "sec." << std::endl;
 
         delete calculator;
         if(availableOptions.count(disparitySave)){
