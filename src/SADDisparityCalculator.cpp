@@ -38,7 +38,7 @@ void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
 
     cv::Mat finalDisparity(cv::Mat::zeros(imageSize, CV_32S));
 
-    const size_t probableDisparityValue = imageSize.width/10;
+    const size_t probableDisparityValue = imageSize.width/4;
     for(size_t currentRow =0; currentRow < imageSize.height; currentRow+=blockSize){
         for(size_t currentCol=0; currentCol < imageSize.width; currentCol+=blockSize){
             auto compareBlock = leftImage(cv::Rect(currentCol, currentRow, blockSize, blockSize));
