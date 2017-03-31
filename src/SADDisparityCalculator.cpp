@@ -57,12 +57,14 @@ void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
             cv::Mat disparityBlock(cv::Mat::ones(compareBlock.size(), CV_32S)*disparityValue);
             disparityBlock.copyTo(finalDisparity(cv::Rect(currentCol, currentRow, blockSize, blockSize)));
         }
-        processedElements++;
 
-        if(omp_get_thread_num()==0)
+
+#pragma omp critical
         {
-            std::cout << "processed: " << processedElements << " out of: " << imageSize.height/blockSize << std::endl;
-        }
+            processedElements++;
+            std::cout << "processed: " << processedElements << " out of: " << imageSize.height/blockSize <<
+                 "\t\t\t" << static_cast<float>(processedElements)/(imageSize.height/blockSize)*100  << "%" <<std::endl;
+        };
     }
     std::cout << "Processing finished" << std::endl;
 
