@@ -8,6 +8,8 @@
 #include <opencv/cv.hpp>
 #include <iostream>
 #include "SADDisparityCalculator.hpp"
+#include <omp.h>
+
 
 SADDisparityCalculator::SADDisparityCalculator(std::string leftImagePath, std::string rightImagePath)
     : mLeftImagePath(leftImagePath),
@@ -17,6 +19,10 @@ SADDisparityCalculator::SADDisparityCalculator(std::string leftImagePath, std::s
 void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
     auto leftImage = cv::imread(mLeftImagePath, CV_LOAD_IMAGE_GRAYSCALE);
     auto rightImage = cv::imread(mRightImagePath, CV_LOAD_IMAGE_GRAYSCALE);
+
+    if(leftImage.empty() or rightImage.empty()){
+        throw std::invalid_argument("Provided image paths are wrong!");
+    }
 
     if(leftImage.size() != rightImage.size()){
         throw std::invalid_argument("Provided images are of different sizes");
@@ -39,6 +45,8 @@ void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
     cv::Mat finalDisparity(cv::Mat::zeros(imageSize, CV_32S));
 
     const size_t probableDisparityValue = imageSize.width/4;
+    size_t processedElements=0;
+#pragma omp parallel for
     for(size_t currentRow =0; currentRow < imageSize.height; currentRow+=blockSize){
         for(size_t currentCol=0; currentCol < imageSize.width; currentCol+=blockSize){
             auto compareBlock = leftImage(cv::Rect(currentCol, currentRow, blockSize, blockSize));
@@ -49,9 +57,14 @@ void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
             cv::Mat disparityBlock(cv::Mat::ones(compareBlock.size(), CV_32S)*disparityValue);
             disparityBlock.copyTo(finalDisparity(cv::Rect(currentCol, currentRow, blockSize, blockSize)));
         }
-        std::cout << "processed " << currentRow+blockSize << " out of " << imageSize.height << "\t progress: "
-                  << static_cast<float>(currentRow+blockSize)/imageSize.height * 100 << "%" <<  std::endl;
+        processedElements++;
+
+        if(omp_get_thread_num()==0)
+        {
+            std::cout << "processed: " << processedElements << " out of: " << imageSize.height/blockSize << std::endl;
+        }
     }
+    std::cout << "Processing finished" << std::endl;
 
     finalDisparity.convertTo(finalDisparity, CV_8U);
     cv::medianBlur(finalDisparity,finalDisparity,blockSize*2+1);

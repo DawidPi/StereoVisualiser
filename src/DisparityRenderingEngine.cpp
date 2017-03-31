@@ -160,7 +160,6 @@ glm::mat4 DisparityRenderingEngine::calculateTrasformationMatrix() {
     auto translation = glm::mat4(1.0f);
     auto translationBase = -7.0f;
     translation = glm::translate(translation, glm::vec3(0.0f, 0.0f, translationBase + mZoom));
-    auto centerTranslation = glm::mat4(1.0f);
     return  frustum * translation * rotationXYZ;
 }
 

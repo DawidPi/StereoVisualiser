@@ -17,6 +17,10 @@ void SGBMDisparityCalculator::calculate(cv::Mat &outputImage) {
     auto leftImage = cv::imread(mLeftImagePath, CV_LOAD_IMAGE_GRAYSCALE);
     auto rightImage = cv::imread(mRightImagePath, CV_LOAD_IMAGE_GRAYSCALE);
 
+    if(leftImage.empty() or rightImage.empty()){
+        throw std::invalid_argument("Provided image paths are wrong!");
+    }
+
     leftImage.convertTo(leftImage,CV_8U);
     leftImage.convertTo(leftImage,CV_8U);
 
