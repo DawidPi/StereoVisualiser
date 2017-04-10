@@ -125,12 +125,6 @@ void DisparityRenderingEngine::render(GLFWwindow *window) {
     glDrawArrays(GL_POINTS, 0, (GLsizei) mVertexes);
 }
 
-void DisparityRenderingEngine::onGlfwClose() {
-    glDeleteVertexArrays(1,&vao);
-    glDeleteProgram(program);
-    glDeleteBuffers(1, &buffer);
-}
-
 GLuint DisparityRenderingEngine::spawnShader(GLuint shader, const char *shaderPath) {
     auto createdShader = glCreateShader(shader);
     std::string stream;

@@ -16,7 +16,7 @@ public:
     virtual void init()=0;
     virtual void render(GLFWwindow *window)=0;
     virtual void startWindow(const char *windowName);
-    virtual void onGlfwClose()=0;
+
     virtual void onKey(int key, int scancode, int action, int mods)=0;
     virtual void onScroll(double xOffset, double yOffset)=0;
     virtual void onMouseButton(int button, int action, int mods)=0;

@@ -8,7 +8,6 @@
 #include <opencv/cv.hpp>
 #include <iostream>
 #include "SADDisparityCalculator.hpp"
-#include <omp.h>
 
 
 SADDisparityCalculator::SADDisparityCalculator(std::string leftImagePath, std::string rightImagePath)
@@ -33,7 +32,7 @@ void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
     rightImage.convertTo(rightImage, CV_32S);
 
 
-    const size_t blockSize = std::min(imageSize.width, imageSize.height)/50;
+    const int blockSize = std::min(imageSize.width, imageSize.height)/50;
     auto cropWidth = imageSize.width%blockSize;
     auto cropHeight = imageSize.height%blockSize;
 
@@ -72,18 +71,18 @@ void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
     cv::medianBlur(finalDisparity,finalDisparity,blockSize*2+1);
     double min,max;
     cv::minMaxLoc(finalDisparity, &min, &max);
-    finalDisparity.convertTo(finalDisparity, 255.0/(max-min));
+    finalDisparity.convertTo(finalDisparity, static_cast<int>(255.0f/(max-min)));
     outputImage = finalDisparity;
 }
 
-size_t SADDisparityCalculator::findSmallestSAD(size_t row, const cv::Mat &block, const cv::Mat &image) {
+int SADDisparityCalculator::findSmallestSAD(int row, const cv::Mat &block, const cv::Mat &image) {
     size_t smallestSAD= std::numeric_limits<size_t>::max();
-    size_t smallestSADOffset = 0;
+    int smallestSADOffset = 0;
 
     for(decltype(image.cols) currentX=0; currentX < image.cols - block.cols; ++currentX){
         cv::Mat comparedBlock = image(cv::Rect(currentX, row, block.cols, block.rows));
 
-        size_t SAD = cv::sum(cv::abs(block - comparedBlock))[0];
+        size_t SAD = static_cast<size_t>(cv::sum(cv::abs(block - comparedBlock))[0]);
         if(SAD < smallestSAD){
             smallestSAD = SAD;
             smallestSADOffset = currentX;

@@ -16,7 +16,7 @@ private:
     std::string mLeftImagePath;
     std::string mRightImagePath;
 
-    size_t findSmallestSAD(size_t row, const cv::Mat &block, const cv::Mat &image);
+    int findSmallestSAD(int row, const cv::Mat &block, const cv::Mat &image);
 };
 
 

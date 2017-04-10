@@ -17,7 +17,6 @@ public:
     DisparityRenderingEngine(cv::Mat& image);
     void init() override;
     void render(GLFWwindow *window) override;
-    void onGlfwClose() override;
 
 private:
     std::string mImagePath;
