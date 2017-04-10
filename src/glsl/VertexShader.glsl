@@ -5,10 +5,10 @@
 in vec4 position;
 out vec4 fs_color;
 
-layout (location=0) uniform mat4 transformation;
-layout (location=1) uniform bool colorful;
-layout (location=2) uniform float minimumValue;
-layout (location=3) uniform float maximumValue;
+uniform mat4 transformation;
+uniform bool colorful;
+uniform float minimumValue;
+uniform float maximumValue;
 
 void main() {
     const float floatEps=0.000001;
