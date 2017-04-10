@@ -33,7 +33,7 @@ void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
     rightImage.convertTo(rightImage, CV_32S);
 
 
-    const size_t blockSize = std::min(imageSize.width, imageSize.height)/50;//5 ;
+    const size_t blockSize = std::min(imageSize.width, imageSize.height)/50;
     auto cropWidth = imageSize.width%blockSize;
     auto cropHeight = imageSize.height%blockSize;
 
@@ -44,13 +44,13 @@ void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
 
     cv::Mat finalDisparity(cv::Mat::zeros(imageSize, CV_32S));
 
-    const size_t probableDisparityValue = imageSize.width/4;
+    const int probableDisparityValue = imageSize.width/4;
     size_t processedElements=0;
 #pragma omp parallel for
-    for(size_t currentRow =0; currentRow < imageSize.height; currentRow+=blockSize){
-        for(size_t currentCol=0; currentCol < imageSize.width; currentCol+=blockSize){
+    for(decltype(imageSize.height) currentRow =0; currentRow < imageSize.height; currentRow+=blockSize){
+        for(decltype(imageSize.width) currentCol=0; currentCol < imageSize.width; currentCol+=blockSize){
             auto compareBlock = leftImage(cv::Rect(currentCol, currentRow, blockSize, blockSize));
-            long int disparityValue = static_cast<long int>(currentCol) - static_cast<long int>(findSmallestSAD(currentRow, compareBlock, rightImage));
+            int disparityValue = static_cast<long int>(currentCol) - static_cast<long int>(findSmallestSAD(currentRow, compareBlock, rightImage));
             if(std::abs(disparityValue) > probableDisparityValue or disparityValue < 0){
                 disparityValue=0;
             }
@@ -80,7 +80,7 @@ size_t SADDisparityCalculator::findSmallestSAD(size_t row, const cv::Mat &block,
     size_t smallestSAD= std::numeric_limits<size_t>::max();
     size_t smallestSADOffset = 0;
 
-    for(size_t currentX=0; currentX < image.cols - block.cols; ++currentX){
+    for(decltype(image.cols) currentX=0; currentX < image.cols - block.cols; ++currentX){
         cv::Mat comparedBlock = image(cv::Rect(currentX, row, block.cols, block.rows));
 
         size_t SAD = cv::sum(cv::abs(block - comparedBlock))[0];

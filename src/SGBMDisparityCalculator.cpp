@@ -37,8 +37,8 @@ void SGBMDisparityCalculator::calculate(cv::Mat &outputImage) {
 
     cv::ximgproc::getDisparityVis(leftDisparity, outputImage);
 
-    for(size_t beginX=0; beginX < outputImage.cols; ++beginX){
-        for(size_t beginY=0; beginY < outputImage.rows; ++beginY){
+    for(decltype(outputImage.cols) beginX=0; beginX < outputImage.cols; ++beginX){
+        for(decltype(outputImage.rows) beginY=0; beginY < outputImage.rows; ++beginY){
             if(outputImage.at<float>(beginY, beginX) == std::numeric_limits<float>::infinity()){
                 outputImage.at<float>(beginY, beginX) = 1;
             }

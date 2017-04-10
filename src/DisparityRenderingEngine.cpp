@@ -112,7 +112,7 @@ void DisparityRenderingEngine::render(GLFWwindow *window) {
     glfwGetWindowSize(window, &width, &height);
     glViewport(0,0,width, height);
     glUseProgram(program);
-    auto wholeTransformationMatrix = calculateTrasformationMatrix();
+    auto wholeTransformationMatrix = calculateTransformationMatrix();
     auto location = glGetUniformLocation(program, "transformation");
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(wholeTransformationMatrix));
     location = glGetUniformLocation(program, "minimumValue");
@@ -157,7 +157,7 @@ GLuint DisparityRenderingEngine::spawnShader(GLuint shader, const char *shaderPa
     return createdShader;
 }
 
-glm::mat4 DisparityRenderingEngine::calculateTrasformationMatrix() {
+glm::mat4 DisparityRenderingEngine::calculateTransformationMatrix() {
     auto frustum =  glm::perspective(-50.0f, static_cast<float>(getWidth())/getHeight(), 1.0f, 1000.0f );
     auto rotationXYZ = glm::mat4(1.0f);
     rotationXYZ = glm::rotate(rotationXYZ, mRotationX, glm::vec3(1.0f,0.0f,0.0f));
@@ -169,7 +169,7 @@ glm::mat4 DisparityRenderingEngine::calculateTrasformationMatrix() {
     return  frustum * translation * rotationXYZ;
 }
 
-void DisparityRenderingEngine::onKey(int key, int scancode, int action, int mods) {
+void DisparityRenderingEngine::onKey(int key, int, int, int) {
     const GLfloat rotationDiff = glm::pi<float>()/500;
     const GLfloat zoomDiff = 0.05;
     if(key == ']'){
@@ -219,11 +219,11 @@ void DisparityRenderingEngine::rotationToRange(GLfloat &rotationAngle) {
     }
 }
 
-void DisparityRenderingEngine::onScroll(double xOffset, double yOffset) {
+void DisparityRenderingEngine::onScroll(double, double yOffset) {
     mZoom+=0.5f*yOffset;
 }
 
-void DisparityRenderingEngine::onMouseButton(int button, int action, int mods) {
+void DisparityRenderingEngine::onMouseButton(int button, int action, int) {
     if(button == GLFW_MOUSE_BUTTON_LEFT){
         if(action == GLFW_PRESS)
             mMouseButtonPressed=true;

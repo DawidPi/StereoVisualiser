@@ -27,8 +27,6 @@ private:
     GLuint program;
     GLuint vertexShader;
     GLuint vao;
-    GLuint tessControlShader;
-    GLuint tessShader;
     GLuint fragmentShader;
     GLuint buffer;
     GLfloat mZoom = 0.0f;
@@ -43,7 +41,7 @@ private:
     void rotationToRange(GLfloat &rotationAngle);
     GLuint spawnShader(GLuint shader, const char *shaderPath);
     void calculateVertices(std::vector<GLfloat> &vector, const cv::Mat &mat);
-    glm::mat4 calculateTrasformationMatrix();
+    glm::mat4 calculateTransformationMatrix();
 
 private:
     struct MousePosition{

@@ -8,9 +8,12 @@ set(SOURCES
         DisparityRenderingEngine.hpp
         SGBMDisparityCalculator.cpp
         SGBMDisparityCalculator.hpp
-        DisparityCalculator.hpp SADDisparityCalculator.cpp SADDisparityCalculator.hpp)
+        DisparityCalculator.hpp
+        SADDisparityCalculator.cpp
+        SADDisparityCalculator.hpp
+        )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Weffc++ -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
 find_package(OpenMP)
 if (OPENMP_FOUND)
@@ -21,7 +24,7 @@ find_package(OpenGL REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost COMPONENTS program_options REQUIRED)
 
-include_directories(SYSTEM ${OPENGL_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ../glad/include )
+include_directories(SYSTEM ${OPENGL_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ../glad/include ../glfw/include )
 add_executable(${PROJECT_NAME} ${SOURCES})
 add_dependencies(${PROJECT_NAME} glfw glad glm)
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${OPENGL_gl_LIBRARY} ${Boost_LIBRARIES} glfw glad glm)
