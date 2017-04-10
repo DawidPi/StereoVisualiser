@@ -1,4 +1,4 @@
-#version 440
+#version 400
 out vec4 color;
 in vec4 fs_color;
 

@@ -66,13 +66,16 @@ void DisparityRenderingEngine::calculateVertices(std::vector<GLfloat> &vector, c
 void DisparityRenderingEngine::init() {
     program = glCreateProgram();
     vertexShader = spawnShader(GL_VERTEX_SHADER, "glsl/VertexShader.glsl");
-    tessControlShader = spawnShader(GL_TESS_CONTROL_SHADER, "glsl/TesselationControlShader.glsl");
-    tessShader = spawnShader(GL_TESS_EVALUATION_SHADER, "glsl/TesselationShader.glsl");
     fragmentShader = spawnShader(GL_FRAGMENT_SHADER, "glsl/FragmentShader.glsl");
 
     glAttachShader(program, vertexShader);
     glAttachShader(program, fragmentShader);
     glLinkProgram(program);
+    GLboolean isLinked = 0;
+    glGetProgramiv(program, GL_LINK_STATUS, (int *)&isLinked);
+    if(isLinked == GL_FALSE)
+        throw std::runtime_error("OpenGL could not link");
+
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
@@ -82,7 +85,6 @@ void DisparityRenderingEngine::init() {
     glCullFace(GL_FRONT_AND_BACK);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    glShadeModel(GL_SMOOTH);
     cv::Mat image;
     if(!mImagePath.empty())
         image = cv::imread(mImagePath, cv::IMREAD_GRAYSCALE);
@@ -111,11 +113,15 @@ void DisparityRenderingEngine::render(GLFWwindow *window) {
     glViewport(0,0,width, height);
     glUseProgram(program);
     auto wholeTransformationMatrix = calculateTrasformationMatrix();
-    glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(wholeTransformationMatrix));
-    glUniform1f(2, static_cast<GLfloat>(mMinimum));
-    glUniform1f(3, static_cast<GLfloat>(mMaximum));
+    auto location = glGetUniformLocation(program, "transformation");
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(wholeTransformationMatrix));
+    location = glGetUniformLocation(program, "minimumValue");
+    glUniform1f(location, static_cast<GLfloat>(mMinimum));
+    location = glGetUniformLocation(program, "maximumValue");
+    glUniform1f(location, static_cast<GLfloat>(mMaximum));
+    location = glGetUniformLocation(program, "colorful");
+    glUniform1i(location, mColor);
     glEnableVertexAttribArray(0);
-    glUniform1i(1, mColor);
     glDrawArrays(GL_POINTS, 0, (GLsizei) mVertexes);
 }
 
@@ -152,7 +158,7 @@ GLuint DisparityRenderingEngine::spawnShader(GLuint shader, const char *shaderPa
 }
 
 glm::mat4 DisparityRenderingEngine::calculateTrasformationMatrix() {
-    auto frustum =  glm::perspective(-50.0f, static_cast<float>(getWidth())/getHeight(), 1.0f, 1000.0f ); //glm::frustum(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 2.0f);
+    auto frustum =  glm::perspective(-50.0f, static_cast<float>(getWidth())/getHeight(), 1.0f, 1000.0f );
     auto rotationXYZ = glm::mat4(1.0f);
     rotationXYZ = glm::rotate(rotationXYZ, mRotationX, glm::vec3(1.0f,0.0f,0.0f));
     rotationXYZ = glm::rotate(rotationXYZ, mRotationY, glm::vec3(0.0f,1.0f,0.0f));
