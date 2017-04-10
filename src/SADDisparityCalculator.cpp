@@ -4,7 +4,6 @@
 
 #include <stdexcept>
 #include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgcodecs/imgcodecs_c.h>
 #include <opencv/cv.hpp>
 #include <iostream>
 #include "SADDisparityCalculator.hpp"
