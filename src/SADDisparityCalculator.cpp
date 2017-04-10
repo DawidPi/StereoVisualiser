@@ -31,8 +31,8 @@ void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
     leftImage.convertTo(leftImage, CV_32S);
     rightImage.convertTo(rightImage, CV_32S);
 
-
-    const int blockSize = std::min(imageSize.width, imageSize.height)/50;
+    const int maxBlocksInSmallerDimension = 50;
+    const int blockSize = std::min(imageSize.width, imageSize.height) / maxBlocksInSmallerDimension;
     auto cropWidth = imageSize.width%blockSize;
     auto cropHeight = imageSize.height%blockSize;
 
@@ -45,6 +45,7 @@ void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
 
     const int probableDisparityValue = imageSize.width/4;
     size_t processedElements=0;
+    
 #pragma omp parallel for
     for(decltype(imageSize.height) currentRow =0; currentRow < imageSize.height; currentRow+=blockSize){
         for(decltype(imageSize.width) currentCol=0; currentCol < imageSize.width; currentCol+=blockSize){
