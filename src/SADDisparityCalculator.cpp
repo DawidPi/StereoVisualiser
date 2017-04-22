@@ -42,7 +42,6 @@ void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
 
     cv::Mat finalDisparity(cv::Mat::zeros(imageSize, CV_32S));
 
-    const int probableDisparityValue = imageSize.width/4;
     size_t processedElements=0;
     
 #pragma omp parallel for
@@ -50,9 +49,6 @@ void SADDisparityCalculator::calculate(cv::Mat &outputImage) {
         for(decltype(imageSize.width) currentCol=0; currentCol < imageSize.width; currentCol+=blockSize){
             auto compareBlock = leftImage(cv::Rect(currentCol, currentRow, blockSize, blockSize));
             int disparityValue = static_cast<long int>(currentCol) - static_cast<long int>(findSmallestSAD(currentRow, compareBlock, rightImage));
-            if(std::abs(disparityValue) > probableDisparityValue or disparityValue < 0){
-                disparityValue=0;
-            }
             cv::Mat disparityBlock(cv::Mat::ones(compareBlock.size(), CV_32S)*disparityValue);
             disparityBlock.copyTo(finalDisparity(cv::Rect(currentCol, currentRow, blockSize, blockSize)));
         }
